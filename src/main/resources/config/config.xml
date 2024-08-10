@@ -3,6 +3,14 @@
 
 <configuration>
     <typeAliases>
+        <typeAlias type="com.example.wantedpreonboardingbackend.dto.CompanyDto" alias="companyDto"/>
+        <typeAlias type="com.example.wantedpreonboardingbackend.dto.RecruitListDto" alias="recruitListDto"/>
+        <typeAlias type="com.example.wantedpreonboardingbackend.dto.UserDto" alias="userDto"/>
+        <typeAlias type="com.example.wantedpreonboardingbackend.dto.RecruitDto" alias="recruitDto"/>
+        <typeAlias type="com.example.wantedpreonboardingbackend.dto.UserGradeDto" alias="userGradeDto"/>
 
+        <typeAlias type="com.example.wantedpreonboardingbackend.vo.RecruitVo" alias="recruitVo"/>
+        <typeAlias type="com.example.wantedpreonboardingbackend.vo.RecruitDetailVo" alias="recruitDetailVo"/>
+        <typeAlias type="com.example.wantedpreonboardingbackend.vo.RecruitSearchResponse" alias="recruitSearchResponse"/>
     </typeAliases>
 </configuration>

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.wantedpreonboardingbackend.mapper.BoardMapper">
+
+    <!-- 채용 공고 등록-->
+<insert id="insertRecruit" parameterType="recruitDto">
+    <selectKey keyProperty="recruitId" order="BEFORE" resultType="long">
+        SELECT SEQ_BE_RECRUIT.nextval FROM DUAL
+    </selectKey>
+    INSERT INTO BE_RECRUIT(RECRUIT_ID,RECRUIT_POSITION,RECRUIT_PAY,
+                           RECRUIT_CONTENT,RECRUIT_SKILL,COMPANY_ID)
+    VALUES(#{recruitId},#{recruitPosition},#{recruitPay},
+           #{recruitContent},#{recruitSkill},#{companyId})
+</insert>
+
+<!--    채용 공고 수정-->
+<update id="updateRecruit" parameterType="recruitDto">
+    UPDATE BE_RECRUIT
+    SET
+    <trim prefix="" suffix="" suffixOverrides=",">
+        <if test="recruitPosition != null">
+            RECRUIT_POSITION = #{recruitPosition},
+        </if>
+        <if test="recruitPay != null">
+            RECRUIT_PAY = #{recruitPay},
+        </if>
+        <if test="recruitContent != null">
+            RECRUIT_CONTENT = #{recruitContent},
+        </if>
+        <if test="recruitSkill != null">
+            RECRUIT_SKILL = #{recruitSkill},
+        </if>
+    </trim>
+    WHERE RECRUIT_ID = #{recruitId}
+</update>
+
+
+<!-- 채용 공고 삭제 -->
+    <delete id="deleteRecruit" parameterType="long">
+        DELETE FROM BE_RECRUIT
+        WHERE RECRUIT_ID=#{recruitId}
+    </delete>
+
+    <!-- 채용 공고 ID 조회 -->
+    <select id="selectByRecruitId" parameterType="long" resultType="recruitDto">
+        SELECT RECRUIT_ID, RECRUIT_POSITION, RECRUIT_PAY, RECRUIT_CONTENT, RECRUIT_SKILL
+        FROM BE_RECRUIT
+        WHERE RECRUIT_ID = #{recruitId}
+    </select>
+
+<!--    채용 공고 전체 목록 가져오기 -->
+    <select id="selectRecruitList" resultType="recruitVo">
+        SELECT BR.RECRUIT_ID, BC.COMPANY_NAME,BC.COMPANY_NATION, BC.COMPANY_AREA,
+               BR.RECRUIT_POSITION, BR.RECRUIT_PAY, BR.RECRUIT_SKILL
+        FROM BE_RECRUIT BR LEFT JOIN BE_COMPANY BC ON BR.COMPANY_ID = BC.COMPANY_ID
+        ORDER BY  BR.RECRUIT_ID ASC
+    </select>
+
+<!--    채용 공고 목록 검색-->
+    <select id="selectRecruitByWord" resultType="recruitVo">
+        <![CDATA[
+        SELECT distinct BR.RECRUIT_ID, BC.COMPANY_NAME,BC.COMPANY_NATION, BC.COMPANY_AREA,
+                        BR.RECRUIT_POSITION, BR.RECRUIT_PAY, BR.RECRUIT_SKILL
+        FROM BE_RECRUIT BR LEFT JOIN BE_COMPANY BC ON BR.COMPANY_ID = BC.COMPANY_ID
+        WHERE (BR.RECRUIT_ID ||   BR.RECRUIT_PAY || BR.RECRUIT_SKILL)
+              LIKE '%' || #{searchWord} || '%'
+              OR (BC.COMPANY_NAME|| BC.COMPANY_NATION || BC.COMPANY_AREA ||
+              BR.RECRUIT_POSITION )
+              LIKE '%' || #{searchWord} || '%'
+        ORDER BY RECRUIT_ID ASC
+        ]]>
+    </select>
+
+<!--    채용 상세 페이지 조회 -->
+<select id="selectRecruitDetail" parameterType="long" resultType="recruitDetailVo">
+    <![CDATA[
+    SELECT BR.RECRUIT_ID,BC.COMPANY_NAME,BC.COMPANY_NATION,
+    BC.COMPANY_AREA,BR.RECRUIT_POSITION,BR.RECRUIT_PAY,
+    BR.RECRUIT_SKILL, BR.RECRUIT_CONTENT,
+    (
+    SELECT LISTAGG(BR_SUB.RECRUIT_ID, ',') WITHIN GROUP (ORDER BY BR_SUB.RECRUIT_ID)
+    FROM BE_RECRUIT BR_SUB
+    WHERE BR_SUB.COMPANY_ID = BR.COMPANY_ID
+    AND BR_SUB.RECRUIT_ID <> BR.RECRUIT_ID
+    ) AS RECRUIT_ID_LIST
+    FROM BE_RECRUIT BR
+    LEFT JOIN BE_COMPANY BC ON BR.COMPANY_ID = BC.COMPANY_ID
+    WHERE BR.RECRUIT_ID = #{recruitId}
+    ]]>
+</select>
+
+<!--    채용 공고 사용자 지원-->
+<insert id="insertRecruitApply" parameterType="recruitListDto">
+    INSERT INTO BE_RECRUIT_LIST(USER_ID, RECRUIT_ID)
+    VALUES (#{userId},#{recruitId})
+</insert>
+
+<!--    사용자가 지원한 공고인지 조회-->
+    <select id="selectRecruitApply" parameterType="recruitListDto" resultType="int">
+        SELECT COUNT(RECRUIT_ID)
+        FROM BE_RECRUIT_LIST
+        WHERE RECRUIT_ID =#{recruitId} AND USER_ID =#{userId}
+    </select>
+
+</mapper>
+
+
+
+
+
+
+
