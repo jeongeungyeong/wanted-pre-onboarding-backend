@@ -8,10 +8,10 @@ import org.springframework.stereotype.Component;
 @Data
 @NoArgsConstructor
 public class RecruitDto {
+    private Long companyId;
     private Long recruitId;
     private String recruitPosition;
     private Long recruitPay;
     private String recruitContent;
     private String recruitSkill;
-    private Long companyId;
 }

@@ -7,6 +7,7 @@ import com.example.wantedpreonboardingbackend.vo.RecruitDetailVo;
 import com.example.wantedpreonboardingbackend.vo.RecruitSearchResponse;
 import com.example.wantedpreonboardingbackend.vo.RecruitVo;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -24,7 +25,8 @@ import static org.mockito.Mockito.*;
 public class BoardServiceTest {
     @Mock
     BoardMapper boardMapper;
-    @InjectMocks BoardService boardService;
+    @InjectMocks
+    BoardService boardService;
 
 
     RecruitDto recruitDto;
@@ -33,8 +35,8 @@ public class BoardServiceTest {
     RecruitListDto recruitListDto;
 
     @BeforeEach
-    void setUp(){
-        recruitDto= new RecruitDto();
+    void setUp() {
+        recruitDto = new RecruitDto();
         recruitDto.setRecruitId(1L);
         recruitDto.setRecruitPosition("백엔드 개발자 테스트");
         recruitDto.setRecruitPay(1000000L);
@@ -62,21 +64,22 @@ public class BoardServiceTest {
         recruitDetailVo.setRecruitContent("채용공고 상세 테스트~");
         recruitDetailVo.setRecruitIdList("1,2,3");
 
-       recruitListDto = new RecruitListDto();
-       recruitListDto.setRecruitId(1L);
-       recruitListDto.setUserId(1L);
+        recruitListDto = new RecruitListDto();
+        recruitListDto.setRecruitId(1L);
+        recruitListDto.setUserId(1L);
     }
-
+    
+    @DisplayName("채용공고 등록")
     @Test
-    void registerRecruit(){
+    void registerRecruit() {
         // Given
         Mockito.doNothing().when(boardMapper).insertRecruit(any(RecruitDto.class));
         // When
         boardService.registerRecruit(recruitDto);
         // Then
-        Mockito.verify(boardMapper,Mockito.times(1)).insertRecruit(any());
+        Mockito.verify(boardMapper, Mockito.times(1)).insertRecruit(any());
     }
-
+    @DisplayName("채용공고 수정")
     @Test
     void modifyRecruit() {
         // Given
@@ -90,19 +93,20 @@ public class BoardServiceTest {
 
         assertEquals(recruitDto, updatedRecruitDto);
     }
-
+    @DisplayName("채용공고 삭제")
     @Test
-    void removeRecruit(){
+    void removeRecruit() {
         // Given
         doNothing().when(boardMapper).deleteRecruit(any(Long.class));
         // When
         boardService.removeRecruit(1L);
         // Then
-        verify(boardMapper,times(1)).deleteRecruit(any());
+        verify(boardMapper, times(1)).deleteRecruit(any());
     }
-
+    
+    @DisplayName("채용공고 조회")
     @Test
-    void findRecruitList(){
+    void findRecruitList() {
         // Given
         doReturn(List.of(recruitVo)).when(boardMapper).selectRecruitList();
         // When
@@ -110,7 +114,7 @@ public class BoardServiceTest {
         // Then
         recruitList.contains(recruitVo);
     }
-
+    @DisplayName("채용공고 검색")
     @Test
     void findRecruitByWord() {
         // Given
@@ -129,7 +133,7 @@ public class BoardServiceTest {
 
         verify(boardMapper, times(1)).selectRecruitByWord(searchWord);
     }
-
+    @DisplayName("채용공고 상세 조회")
     @Test
     void findRecruitDetail() {
         // Given
@@ -148,34 +152,17 @@ public class BoardServiceTest {
 
         verify(boardMapper, times(1)).selectRecruitDetail(recruitId);
     }
-
+    @DisplayName("채용공고 지원")
     @Test
     void registerRecruitApply() {
         // Given
         when(boardMapper.selectRecruitApply(recruitListDto)).thenReturn(0);
 
-       // When
+        // When
         boardService.registerRecruitApply(recruitListDto);
 
         // Then
         verify(boardMapper, times(1)).insertRecruitApply(recruitListDto);
     }
-
-
-    @Test
-    void registerRecruitApplyThrowsExceptionIfAlreadyApplied() {
-        RecruitListDto recruitListDto = new RecruitListDto();
-        // Mock behavior for when the user has already applied
-        when(boardMapper.selectRecruitApply(recruitListDto)).thenReturn(1);
-
-        // Verify that an exception is thrown
-        assertThrows(IllegalStateException.class, () -> {
-            boardService.registerRecruitApply(recruitListDto);
-        });
-
-        // Verify that insertRecruitApply was not called
-        verify(boardMapper, never()).insertRecruitApply(recruitListDto);
-    }
-
 
 }

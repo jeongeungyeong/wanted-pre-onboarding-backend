@@ -20,21 +20,28 @@ public class BoardService {
     private final BoardMapper boardMapper;
 
 //    채용공고 등록
-    public void registerRecruit(RecruitDto recruitDto){
+    public RecruitDto  registerRecruit(RecruitDto recruitDto){
         boardMapper.insertRecruit(recruitDto);
+        return recruitDto;
     }
 
 //    채용공고 수정
 public RecruitDto modifyRecruit(Long recruitId,RecruitDto recruitDto){
     recruitDto.setRecruitId(recruitId);
+
     boardMapper.updateRecruit(recruitDto);
     RecruitDto updatedRecruitDto = boardMapper.selectByRecruitId(recruitId);
+
     if (updatedRecruitDto == null) {
         throw new NoSuchElementException("해당 채용글ID가 없습니다: " + recruitId);
     }
     return updatedRecruitDto;
 }
 
+// 채용공고 회사ID 조회
+    public int findByCompanyId(Long recruitId){
+        return boardMapper.selectByCompanyId(recruitId);
+    }
 
 //    채용공고 삭제
     public void removeRecruit(Long recruitId){
@@ -56,7 +63,7 @@ public RecruitDto modifyRecruit(Long recruitId,RecruitDto recruitDto){
 //   채용공고 상세보기
     public List<RecruitDetailVo> findRecruitDetail(Long recruitId){
         return boardMapper.selectRecruitDetail(recruitId);
-    };
+    }
 
 //    채용공고 참여하기
     public void registerRecruitApply(RecruitListDto recruitListDto){

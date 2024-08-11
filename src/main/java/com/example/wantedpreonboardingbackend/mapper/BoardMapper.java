@@ -5,6 +5,7 @@ import com.example.wantedpreonboardingbackend.vo.RecruitDetailVo;
 import com.example.wantedpreonboardingbackend.vo.RecruitVo;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.security.PublicKey;
 import java.util.List;
 
 
@@ -16,8 +17,11 @@ public interface BoardMapper {
 //    채용 공고 수정
     public void updateRecruit(RecruitDto recruitDto);
 
-//    채용 공고 ID 조회
+//    채용 공고 ID로 조회
     public RecruitDto selectByRecruitId(Long recruitId);
+
+//    채용 공고 회사Id로 조회
+    int selectByCompanyId(Long recruitId);
 
 //    채용 공고 삭제
     public void deleteRecruit(Long recruitId);
