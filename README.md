@@ -269,7 +269,8 @@
 - 사용자는 채용상세 페이지를 아래와 같이 확인할 수 있습니다.
 - "채용내용"이 추가적으로 담겨있습니다.
 - 해당 회사가 올린 다른 채용공고가 추가적으로 포함됩니다.
-  - MyBatis를 사용하여 `BE_RECRUIT`와 `BE_COMPANY` 테이블에서 데이터 조회
+  - MyBatis를 사용하여 서브쿼리로 `BE_RECRUIT`와 `BE_COMPANY` 테이블에서 다른 채용공고 데이터 조회
+ 
 ```xml
 <select id="selectRecruitDetail" parameterType="long" resultType="recruitDetailVo">
     <![CDATA[
@@ -287,6 +288,20 @@
     WHERE BR.RECRUIT_ID = #{recruitId}
     ]]>
 </select>
+```
+  - 클래스 `RecruitDetailVo`에서 String으로 전달받은 다른 채용공고 ID 목록을 `List<Long>` 형식으로 전환
+
+    
+```java
+    private List<Long> recruitIdList;
+
+    public void setRecruitIdList(String recruitIdListStr){
+        if(recruitIdListStr != null && !recruitIdListStr.isEmpty()){
+            this.recruitIdList = Arrays.stream(recruitIdListStr.split(","))
+                                        .map(Long::parseLong)
+                                        .collect(Collectors.toList());
+        }
+    }
 ```
 
 ### 🟣 API 명세서
